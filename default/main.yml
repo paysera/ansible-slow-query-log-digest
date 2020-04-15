@@ -1,0 +1,10 @@
+---
+slow_query_log_digest_image: "perconalab/percona-toolkit:3.0.6"
+slow_query_log_digest_slowlog_path: "/var/log/mysql/mariadb-slow.log"
+slow_query_log_digest_database_host: localhost
+slow_query_log_digest_database_port: 3306
+slow_query_log_digest_database_user: root
+slow_query_log_digest_database_pass: pass
+slow_query_log_digest_database_name: slow_query_log
+slow_query_log_digest_database_review_table: global_query_review
+slow_query_log_digest_database_review_history_table: global_query_review_history

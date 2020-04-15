@@ -1,0 +1,31 @@
+---
+- name: Construct unique container name
+  set_fact:
+    container_name: "slow-query-digest-{{ ansible_date_time.iso8601_micro | to_uuid }}"
+
+- name: Start percona toolkit container
+  docker_container:
+    name: "{{ container_name }}"
+    image: "{{ slow_query_log_digest_image }}"
+    networks: "{{ slow_query_log_digest_network }}"
+    command: tail -f /dev/null
+    volumes:
+      - "{{ slow_query_log_digest_volume }}:/var/log/mysql/"
+
+- name: Digest slow query log
+  command: |
+    docker exec {{ container_name }} sh -c
+    'pt-query-digest --user={{ slow_query_log_digest_database_user }} \
+    --password={{ slow_query_log_digest_database_pass }} --port={{ slow_query_log_digest_database_port }} \
+    --review h={{ slow_query_log_digest_database_host }},D={{ slow_query_log_digest_database_name }}, \
+    t={{ slow_query_log_digest_database_review_table }} \
+    --history h={{ slow_query_log_digest_database_host }},D={{ slow_query_log_digest_database_name }}, \
+    t={{ slow_query_log_digest_database_review_history_table }} \
+    --no-report --limit=0% \
+    --filter="\$event->{Bytes} = length(\$event->{arg}) and \$event->{hostname}=\"$HOSTNAME\"" \
+    {{ slow_query_log_digest_slowlog_path }}'
+
+- name: Destroy percona toolkit container
+  docker_container:
+    name: "{{ container_name }}"
+    state: absent
