@@ -9,7 +9,7 @@
     db_name: "{{ slow_query_log_digest_database_name }}"
     db_review_table: "{{ slow_query_log_digest_database_review_table }}"
     db_history_table: "{{ slow_query_log_digest_database_review_history_table }}"
-    
+
 - name: Start percona toolkit container
   docker_container:
     name: "{{ container_name }}"
